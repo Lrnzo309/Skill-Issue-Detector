@@ -33,7 +33,7 @@
         }
 
         .game-shell {
-            width: min(1100px, 100%);
+            width: min(1180px, 100%);
             min-height: 640px;
             border: 2px solid var(--border);
             border-radius: 22px;
@@ -128,6 +128,156 @@
             color: var(--muted);
             margin-top: 34px;
             font-size: 0.9rem;
+        }
+
+        .home-layout {
+            display: block;
+        }
+
+        .home-main {
+            min-width: 0;
+        }
+
+        .home-action-row {
+            display: grid;
+            grid-template-columns: minmax(420px, 560px) 285px;
+            gap: 34px;
+            justify-content: center;
+            align-items: start;
+            margin-top: 24px;
+        }
+
+        .home-action-row .button-grid {
+            margin: 0;
+            max-width: 560px;
+        }
+
+        .home-action-row .credit {
+            margin-top: 26px;
+        }
+
+        .profile-panel {
+            border: 1px solid rgba(0, 255, 0, 0.28);
+            background: rgba(0, 255, 0, 0.035);
+            border-radius: 18px;
+            padding: 20px 18px;
+            box-shadow: inset 0 0 22px rgba(0, 255, 0, 0.045);
+        }
+
+        .profile-panel h3 {
+            color: var(--green);
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            text-transform: lowercase;
+        }
+
+        .profile-ring {
+            --score: 0;
+            --ring-color: var(--green);
+            width: 178px;
+            height: 178px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: conic-gradient(var(--ring-color) calc(var(--score) * 1%), rgba(255, 255, 255, 0.08) 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 26px rgba(0, 255, 0, 0.10);
+        }
+
+        .profile-ring::before {
+            content: "";
+            position: absolute;
+            width: 132px;
+            height: 132px;
+            border-radius: 50%;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .profile-ring-inner {
+            position: relative;
+            text-align: center;
+            z-index: 1;
+        }
+
+        #profile-ring-number {
+            display: block;
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .profile-ring-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.72rem;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .profile-score {
+            text-align: center;
+            color: var(--green);
+            font-size: 0.9rem;
+            line-height: 1.45;
+            margin: 8px auto 12px;
+            letter-spacing: 0.02em;
+        }
+
+        .profile-caption {
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            margin-bottom: 16px;
+        }
+
+        .profile-breakdown {
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+            padding-top: 12px;
+            display: grid;
+            gap: 7px;
+            font-size: 0.78rem;
+            color: #d1d5db;
+        }
+
+        .profile-breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .profile-breakdown-row span:last-child {
+            color: var(--green);
+            white-space: nowrap;
+        }
+
+        .result-profile-panel {
+            max-width: 360px;
+            margin: 24px auto 0;
+        }
+
+        .result-profile-panel .profile-ring {
+            width: 150px;
+            height: 150px;
+        }
+
+        .result-profile-panel .profile-ring::before {
+            width: 110px;
+            height: 110px;
+        }
+
+        .profile-mini-note {
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            margin-top: 8px;
         }
 
         .explanation-box {
@@ -359,10 +509,130 @@
             word-break: break-word;
         }
 
+        .hidden { display: none !important; }
+
+        .diagnosis-loading {
+            text-align: center;
+        }
+
+        .loading-bar {
+            width: min(520px, 100%);
+            height: 18px;
+            margin: 26px auto 10px;
+            border: 1px solid rgba(0, 255, 0, 0.55);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.12);
+        }
+
+        .loading-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 255, 0, 0.45), var(--green));
+            transition: width 0.08s linear;
+        }
+
+        .loading-percent {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .report-label {
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+        }
+
+        .diagnosis-report .screen-buttons {
+            margin-top: 26px;
+        }
+
+        .diagnosis-report .menu-button {
+            min-width: 300px;
+        }
+
         .loss-title { color: var(--red); }
+
+
+        body.home-active {
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 2vw;
+            padding-right: 360px;
+        }
+
+        body.home-active .game-shell {
+            width: min(965px, calc(100vw - 390px));
+            min-height: 640px;
+            overflow: visible;
+        }
+
+        body.home-active .home-layout {
+            display: block;
+        }
+
+        body.home-active .home-action-row {
+            display: block;
+            margin-top: 24px;
+        }
+
+        body.home-active .home-action-row .button-grid {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        body.home-active .profile-panel {
+            position: fixed;
+            top: 18px;
+            right: 2vw;
+            bottom: 18px;
+            width: 320px;
+            overflow: hidden;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.home-active .profile-breakdown {
+            flex: 1;
+            overflow: hidden;
+            align-content: start;
+        }
+
+
+        body.home-active .profile-panel h3 {
+            margin-bottom: 14px;
+        }
+
+        body.home-active .profile-ring {
+            width: 170px;
+            height: 170px;
+            margin-bottom: 14px;
+        }
+
+        body.home-active .profile-ring::before {
+            width: 126px;
+            height: 126px;
+        }
+
+        body.home-active .profile-caption {
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 980px) {
+            body.home-active { padding: 18px; justify-content: center; }
+            body.home-active .game-shell { width: min(1180px, 100%); }
+            body.home-active .profile-panel { position: static; width: 100%; max-height: none; margin: 28px auto 0; }
+        }
 
         @media (max-width: 800px) {
             .game-shell { padding: 22px; min-height: auto; }
+            .home-action-row { grid-template-columns: 1fr; }
+            .profile-panel { max-width: 360px; margin: 0 auto; width: 100%; }
+            .intro-text p { white-space: normal; }
             .hud { grid-template-columns: 1fr; }
             .game-layout { grid-template-columns: 1fr; }
             .button-grid { grid-template-columns: 1fr; }
@@ -371,33 +641,54 @@
         }
     </style>
 </head>
-<body>
+<body class="home-active">
     <main class="game-shell">
         <section id="home-screen" class="screen active">
             <h1>Skill Issue Detector</h1>
-            <p class="subtitle">Welcome to the skill issue detector</p>
 
-            <div class="intro-text">
-                <p>Your job is simple: make every light green before the machine realizes that your skill issue is huge.</p>
-                <p>If that sounds easy, confidence is your first mistake.</p>
-                <p>The puzzle is fair. Your brain might not be.</p>
-                <p>Every extra move makes your skill issue harder to ignore.</p>
-                <p>If you suck, blaming the game will not help.</p>
-                <p>The detector has no mercy, only data.</p>
-                <p>The game is solvable. Your excuses are not.</p>
-                <p>Good luck, you are going to need it.</p>
+            <div class="home-layout">
+                <div class="home-main">
+                    <p class="subtitle">Welcome to the skill issue detector</p>
+
+                    <div class="intro-text">
+                        <p>Your job is simple: make every light green before the machine realizes that your skill issue is huge.</p>
+                        <p>If that sounds easy, confidence is your first mistake.</p>
+                        <p>The puzzle is fair. Your brain might not be.</p>
+                        <p>Every extra move makes your skill issue harder to ignore.</p>
+                        <p>If you suck, blaming the game will not help.</p>
+                        <p>The detector has no mercy, only data.</p>
+                        <p>The game is solvable. Your excuses are not.</p>
+                        <p>Good luck, you are going to need it.</p>
+                    </div>
+
+                    <p class="warning">Select a difficulty and prepare to be exposed.</p>
+
+                    <div class="home-action-row">
+                        <div>
+                            <div class="button-grid">
+                                <button class="menu-button" onclick="selectDifficulty('kids tutorial')">kids tutorial</button>
+                                <button class="menu-button" onclick="selectDifficulty('normal human')">normal human</button>
+                                <button class="menu-button" onclick="selectDifficulty('skill issue')">skill issue</button>
+                                <button class="menu-button" onclick="selectDifficulty('humiliation mode')">humiliation mode</button>
+                            </div>
+
+                        </div>
+
+                        <aside class="profile-panel">
+                            <h3>profile diagnosis</h3>
+                            <div id="profile-ring" class="profile-ring">
+                                <div class="profile-ring-inner">
+                                    <span id="profile-ring-number">--</span>
+                                    <span class="profile-ring-label">skill issue</span>
+                                </div>
+                            </div>
+                            <p id="home-profile-score" class="profile-score">complete one scan to unlock profile diagnosis</p>
+                            <p class="profile-caption">Play at least one completed game to get a score. 0 = cheating suspect. 100 = evidence overwhelming.</p>
+                            <div id="profile-breakdown" class="profile-breakdown"></div>
+                        </aside>
+                    </div>
+                </div>
             </div>
-
-            <p class="warning">Select a difficulty and prepare to be exposed.</p>
-
-            <div class="button-grid">
-                <button class="menu-button" onclick="selectDifficulty('kids tutorial')">kids tutorial</button>
-                <button class="menu-button" onclick="selectDifficulty('normal human')">normal human</button>
-                <button class="menu-button" onclick="selectDifficulty('skill issue')">skill issue</button>
-                <button class="menu-button" onclick="selectDifficulty('humiliation mode')">humiliation mode</button>
-            </div>
-
-            <p class="credit">Game designed and coded by Lrnzo309</p>
         </section>
 
         <section id="explanation-screen" class="screen">
@@ -431,8 +722,6 @@
                 <aside class="side-panel">
                     <h3>How it works</h3>
                     <p>Each button shows which lights it changes. Pressing a button cycles all those lights forward.</p>
-                    <p>Easy mode uses two colors. Normal and skill issue use three. Humiliation mode uses five because apparently peace was never an option.</p>
-
                     <div class="screen-buttons">
                         <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
                         <button class="menu-button secondary-button" onclick="giveUp()">give up</button>
@@ -448,11 +737,36 @@
 
         <section id="result-screen" class="screen">
             <div class="result-card">
-                <div id="result-title" class="result-title">result</div>
-                <p id="result-message" class="result-message"></p>
-                <div id="result-data" class="result-data"></div>
-                <div class="screen-buttons">
-                    <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
+                <div id="diagnosis-loading" class="diagnosis-loading">
+                    <div class="result-title">analyzing performance</div>
+                    <p class="result-message">generating skill issue report...</p>
+                    <div class="loading-bar">
+                        <div id="loading-fill" class="loading-fill"></div>
+                    </div>
+                    <p id="loading-percent" class="loading-percent">0%</p>
+                </div>
+
+                <div id="diagnosis-report" class="diagnosis-report hidden">
+                    <div class="report-label">diagnosis complete</div>
+                    <div id="result-title" class="result-title">result</div>
+                    <p id="result-message" class="result-message"></p>
+                    <div id="result-data" class="result-data"></div>
+
+                    <div id="result-profile-panel" class="profile-panel result-profile-panel hidden">
+                        <h3>profile diagnosis updated</h3>
+                        <div id="result-profile-ring" class="profile-ring">
+                            <div class="profile-ring-inner">
+                                <span id="result-profile-ring-number">--</span>
+                                <span class="profile-ring-label">skill issue</span>
+                            </div>
+                        </div>
+                        <p id="result-profile-score" class="profile-score">calculating profile damage...</p>
+                        <p class="profile-mini-note">profile score uses every completed scan saved in this browser.</p>
+                    </div>
+
+                    <div id="result-buttons" class="screen-buttons hidden">
+                        <button class="menu-button secondary-button" onclick="showScreen('home-screen')">accept diagnosis and return home</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -473,6 +787,10 @@
         let selectedDifficulty = "";
         let currentSettings = null;
         let scanTimer = null;
+        let resultProgressTimer = null;
+        let resultDiagnosisTimer = null;
+        let resultButtonTimer = null;
+        let resultProfileTimer = null;
 
         const NUM_LIGHTS = 6;
         const NUM_BUTTONS = 8;
@@ -485,6 +803,15 @@
         let buttonOrder = [];
         let knownSolutionLength = 0;
         let currentMixTarget = 0;
+
+        const profileWeights = {
+            "kids tutorial": 25,
+            "normal human": 40,
+            "skill issue": 25,
+            "humiliation mode": 10
+        };
+
+        let profileStats = loadProfileStats();
 
         const patterns = [
             [0, 1, 3],
@@ -569,11 +896,22 @@
         };
 
         function showScreen(screenId) {
+            if (screenId != "result-screen") {
+                clearResultTimers();
+            }
+
+            if (screenId == "home-screen") {
+                document.body.classList.add("home-active");
+            } else {
+                document.body.classList.remove("home-active");
+            }
+
             const screens = document.querySelectorAll(".screen");
             for (let i = 0; i < screens.length; i++) {
                 screens[i].classList.remove("active");
             }
             document.getElementById(screenId).classList.add("active");
+            updateProfileScoreText();
         }
 
         function selectDifficulty(difficulty) {
@@ -792,19 +1130,140 @@
         }
 
         function showResult() {
+            clearResultTimers();
+
+            const loading = document.getElementById("diagnosis-loading");
+            const report = document.getElementById("diagnosis-report");
+            const fill = document.getElementById("loading-fill");
+            const percent = document.getElementById("loading-percent");
+            const buttons = document.getElementById("result-buttons");
+
+            loading.classList.remove("hidden");
+            report.classList.add("hidden");
+            buttons.classList.add("hidden");
+            fill.style.width = "0%";
+            percent.textContent = "0%";
+
+            showScreen("result-screen");
+
+            let progress = 0;
+            resultProgressTimer = setInterval(function() {
+                progress += randomInt(4, 9);
+                if (progress > 100) progress = 100;
+
+                fill.style.width = progress + "%";
+                percent.textContent = progress + "%";
+
+                if (progress >= 100) {
+                    clearInterval(resultProgressTimer);
+                    resultProgressTimer = null;
+                }
+            }, 120);
+
+            resultDiagnosisTimer = setTimeout(function() {
+                showDiagnosisReport();
+            }, 2300);
+        }
+
+        function showDiagnosisReport() {
             const title = document.getElementById("result-title");
             const message = document.getElementById("result-message");
             const data = document.getElementById("result-data");
+            const loading = document.getElementById("diagnosis-loading");
+            const report = document.getElementById("diagnosis-report");
+            const buttons = document.getElementById("result-buttons");
+
             let diagnosis = getDiagnosis();
 
             title.textContent = diagnosis.title;
             title.style.color = diagnosis.color;
             message.textContent = diagnosis.message;
 
-            data.innerHTML =
-                "<p>Moves used: <span class='green-text'>" + moves + "</span></p>";
+            let previousProfileScore = getProfileSkillIssueScore();
+            let scanScore = addCompletedGameToProfile(selectedDifficulty, moves);
+            let profileScore = getProfileSkillIssueScore();
 
-            showScreen("result-screen");
+            data.innerHTML =
+                "<p>Moves used: <span class='green-text'>" + moves + "</span></p>" +
+                "<p>This scan skill issue score: <span class='red-text'>" + scanScore + "/100</span></p>";
+
+            loading.classList.add("hidden");
+            report.classList.remove("hidden");
+            buttons.classList.add("hidden");
+
+            animateResultProfile(previousProfileScore, profileScore);
+
+            resultButtonTimer = setTimeout(function() {
+                buttons.classList.remove("hidden");
+            }, 5000);
+        }
+
+        function animateResultProfile(startScore, endScore) {
+            const panel = document.getElementById("result-profile-panel");
+            const ring = document.getElementById("result-profile-ring");
+            const number = document.getElementById("result-profile-ring-number");
+            const label = document.getElementById("result-profile-score");
+
+            if (!panel || !ring || !number || !label) return;
+
+            panel.classList.remove("hidden");
+
+            if (resultProfileTimer) {
+                clearInterval(resultProfileTimer);
+                resultProfileTimer = null;
+            }
+
+            let start = startScore == null ? 0 : startScore;
+            let end = endScore == null ? 0 : endScore;
+            let step = 0;
+            let totalSteps = 45;
+
+            ring.style.setProperty("--score", start);
+            ring.style.setProperty("--ring-color", getProfileColor(start));
+            number.textContent = start;
+            label.textContent = "updating profile diagnosis...";
+
+            resultProfileTimer = setInterval(function() {
+                step++;
+                let progress = step / totalSteps;
+                let eased = 1 - Math.pow(1 - progress, 3);
+                let current = Math.round(start + (end - start) * eased);
+
+                ring.style.setProperty("--score", current);
+                ring.style.setProperty("--ring-color", getProfileColor(current));
+                number.textContent = current;
+
+                if (step >= totalSteps) {
+                    clearInterval(resultProfileTimer);
+                    resultProfileTimer = null;
+                    ring.style.setProperty("--score", end);
+                    ring.style.setProperty("--ring-color", getProfileColor(end));
+                    number.textContent = end;
+                    label.textContent = end + "/100 — " + getProfileLabel(end);
+                }
+            }, 35);
+        }
+
+        function clearResultTimers() {
+            if (resultProgressTimer) {
+                clearInterval(resultProgressTimer);
+                resultProgressTimer = null;
+            }
+
+            if (resultDiagnosisTimer) {
+                clearTimeout(resultDiagnosisTimer);
+                resultDiagnosisTimer = null;
+            }
+
+            if (resultButtonTimer) {
+                clearTimeout(resultButtonTimer);
+                resultButtonTimer = null;
+            }
+
+            if (resultProfileTimer) {
+                clearInterval(resultProfileTimer);
+                resultProfileTimer = null;
+            }
         }
 
         function getDiagnosis() {
@@ -893,6 +1352,165 @@
             };
         }
 
+        function loadProfileStats() {
+            let emptyStats = {};
+
+            for (let difficulty in profileWeights) {
+                emptyStats[difficulty] = { count: 0, total: 0 };
+            }
+
+            let saved = localStorage.getItem("skillIssueProfileStats");
+            if (!saved) return emptyStats;
+
+            try {
+                let parsed = JSON.parse(saved);
+
+                for (let difficulty in emptyStats) {
+                    if (parsed[difficulty]) {
+                        emptyStats[difficulty].count = parsed[difficulty].count || 0;
+                        emptyStats[difficulty].total = parsed[difficulty].total || 0;
+                    }
+                }
+            } catch (error) {
+                return emptyStats;
+            }
+
+            return emptyStats;
+        }
+
+        function saveProfileStats() {
+            localStorage.setItem("skillIssueProfileStats", JSON.stringify(profileStats));
+        }
+
+        function addCompletedGameToProfile(difficulty, moveCount) {
+            let score = getScanSkillIssueScore(difficulty, moveCount);
+
+            if (!profileStats[difficulty]) {
+                profileStats[difficulty] = { count: 0, total: 0 };
+            }
+
+            profileStats[difficulty].count++;
+            profileStats[difficulty].total += score;
+            saveProfileStats();
+            updateProfileScoreText();
+
+            return score;
+        }
+
+        function getScanSkillIssueScore(difficulty, moveCount) {
+            if (difficulty == "kids tutorial") {
+                if (moveCount <= 2) return 0;
+                if (moveCount < 4) return 10;
+                if (moveCount == 4) return 30;
+                if (moveCount <= 6) return 70;
+                if (moveCount < 10) return 90;
+                return 100;
+            }
+
+            if (difficulty == "normal human") {
+                if (moveCount < 4) return 0;
+                if (moveCount <= 5) return 20;
+                if (moveCount <= 9) return 60;
+                if (moveCount <= 15) return 85;
+                return 100;
+            }
+
+            if (difficulty == "skill issue") {
+                if (moveCount < 5) return 0;
+                if (moveCount <= 7) return 20;
+                if (moveCount <= 10) return 40;
+                if (moveCount < 20) return 70;
+                return 100;
+            }
+
+            if (difficulty == "humiliation mode") {
+                if (moveCount < 11) return 0;
+                if (moveCount <= 20) return 40;
+                if (moveCount < 40) return 80;
+                return 100;
+            }
+
+            return 100;
+        }
+
+        function getProfileSkillIssueScore() {
+            let weightedTotal = 0;
+            let usedWeight = 0;
+
+            for (let difficulty in profileWeights) {
+                let stats = profileStats[difficulty];
+
+                if (stats && stats.count > 0) {
+                    let averageScore = stats.total / stats.count;
+                    weightedTotal += averageScore * profileWeights[difficulty];
+                    usedWeight += profileWeights[difficulty];
+                }
+            }
+
+            if (usedWeight == 0) return null;
+            return Math.round(weightedTotal / usedWeight);
+        }
+
+        function getProfileLabel(score) {
+            if (score == null) return "no completed scans yet";
+            if (score <= 5) return "prime cheating suspect";
+            if (score <= 25) return "suspiciously competent";
+            if (score <= 50) return "survivable, for now";
+            if (score <= 75) return "documented skill issue";
+            return "massive skill issue profile";
+        }
+
+        function updateProfileScoreText() {
+            let score = getProfileSkillIssueScore();
+            let homeScore = document.getElementById("home-profile-score");
+            let ring = document.getElementById("profile-ring");
+            let ringNumber = document.getElementById("profile-ring-number");
+            let breakdown = document.getElementById("profile-breakdown");
+
+            if (!homeScore || !ring || !ringNumber) return;
+
+            if (score == null) {
+                homeScore.textContent = "play one completed scan to unlock score";
+                ring.style.setProperty("--score", 0);
+                ring.style.setProperty("--ring-color", "#00ff00");
+                ringNumber.textContent = "--";
+            } else {
+                homeScore.textContent = getProfileLabel(score);
+                ring.style.setProperty("--score", score);
+                ring.style.setProperty("--ring-color", getProfileColor(score));
+                ringNumber.textContent = score;
+            }
+
+            if (breakdown) {
+                breakdown.innerHTML = getProfileBreakdownHtml();
+            }
+        }
+
+        function getProfileColor(score) {
+            if (score == null) return "#00ff00";
+            if (score <= 25) return "#00ff00";
+            if (score <= 50) return "#ffff00";
+            if (score <= 75) return "#ff7a00";
+            return "#ff0033";
+        }
+
+        function getProfileBreakdownHtml() {
+            let html = "";
+
+            for (let difficulty in profileWeights) {
+                let stats = profileStats[difficulty];
+
+                if (stats && stats.count > 0) {
+                    let avg = Math.round(stats.total / stats.count);
+                    html += "<div class='profile-breakdown-row'><span>" + difficulty + "</span><span>" + avg + "/100 · " + stats.count + "x</span></div>";
+                } else {
+                    html += "<div class='profile-breakdown-row'><span>" + difficulty + "</span><span>no data</span></div>";
+                }
+            }
+
+            return html;
+        }
+
         function giveUp() {
             const data = document.getElementById("loss-data");
 
@@ -949,6 +1567,8 @@
         function randomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
+        updateProfileScoreText();
     </script>
 </body>
 </html>
