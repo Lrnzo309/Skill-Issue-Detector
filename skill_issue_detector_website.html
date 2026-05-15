@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skill Issue Detector</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #111827, #020617 55%, #000000);
+            color: white;
+            font-family: "Courier New", monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-shell {
+            width: min(920px, 100%);
+            min-height: 620px;
+            border: 2px solid rgba(0, 255, 0, 0.45);
+            border-radius: 24px;
+            background: rgba(0, 0, 0, 0.78);
+            box-shadow: 0 0 45px rgba(0, 255, 0, 0.14);
+            padding: 34px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 {
+            color: lime;
+            font-size: clamp(2.1rem, 6vw, 4rem);
+            line-height: 1;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        h2 {
+            color: lime;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #d1d5db;
+            font-size: 1.05rem;
+            margin-bottom: 28px;
+        }
+
+        .intro-text {
+            max-width: 760px;
+            margin: 0 auto 28px;
+            color: #e5e7eb;
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        .warning {
+            color: #ff4d4d;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 18px;
+            max-width: 560px;
+            margin: 32px auto;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            font-family: "Courier New", monospace;
+            font-weight: bold;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+        }
+
+        .menu-button {
+            background: lime;
+            color: black;
+            border-radius: 14px;
+            padding: 18px 20px;
+            font-size: 1rem;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 18px rgba(0, 255, 0, 0.55);
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .secondary-button:hover {
+            border-color: lime;
+            color: lime;
+            box-shadow: none;
+        }
+
+        .credit {
+            text-align: center;
+            color: #9ca3af;
+            margin-top: 34px;
+            font-size: 0.9rem;
+        }
+
+        .explanation-box {
+            max-width: 700px;
+            margin: 30px auto;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 20px;
+            padding: 26px;
+            background: rgba(255, 255, 255, 0.04);
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        .green-text {
+            color: lime;
+            font-weight: bold;
+        }
+
+        .red-text {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+
+        .screen-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .screen-buttons button {
+            min-width: 150px;
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 28px;
+            color: #e5e7eb;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .hud strong {
+            color: lime;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .board-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 350px;
+        }
+
+        .board {
+            display: grid;
+            gap: 10px;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .light {
+            width: 62px;
+            height: 62px;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .light:hover {
+            transform: scale(1.07);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+        }
+
+        .green {
+            background: lime;
+        }
+
+        .yellow {
+            background: #ffd447;
+        }
+
+        .red {
+            background: #ff3131;
+        }
+
+        .side-panel {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            line-height: 1.6;
+        }
+
+        .side-panel h3 {
+            color: lime;
+            margin-bottom: 10px;
+        }
+
+        .side-panel p {
+            color: #d1d5db;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .result-card {
+            max-width: 700px;
+            margin: 35px auto 0;
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            color: lime;
+            margin-bottom: 16px;
+        }
+
+        .result-message {
+            color: #e5e7eb;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 760px) {
+            .game-shell {
+                padding: 22px;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+
+            .light {
+                width: 52px;
+                height: 52px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="game-shell">
+        <section id="home-screen" class="screen active">
+            <h1>Skill Issue Detector</h1>
+            <p class="subtitle">Welcome to the skill issue detector</p>
+
+            <div class="intro-text">
+                <p>Your job is simple: make every light green before the machine realizes that your skill issue is huge.</p>
+                <p>If that sounds easy, confidence is your first mistake. The puzzle is fair. Your brain might not be.</p>
+                <p>Every extra move makes your skill issue harder to ignore. The detector has no mercy, only data.</p>
+            </div>
+
+            <p class="warning">Select a difficulty and prepare to be exposed.</p>
+
+            <div class="button-grid">
+                <button class="menu-button" onclick="selectDifficulty('kids tutorial')">kids tutorial</button>
+                <button class="menu-button" onclick="selectDifficulty('normal human')">normal human</button>
+                <button class="menu-button" onclick="selectDifficulty('skill issue')">skill issue</button>
+                <button class="menu-button" onclick="selectDifficulty('humiliation mode')">humiliation mode</button>
+            </div>
+
+            <p class="credit">Game designed and coded by Lrnzo309</p>
+        </section>
+
+        <section id="explanation-screen" class="screen">
+            <h2 id="difficulty-title">difficulty</h2>
+            <p class="subtitle">difficulty scan selected</p>
+
+            <div id="explanation-text" class="explanation-box"></div>
+
+            <div class="screen-buttons">
+                <button class="menu-button secondary-button" onclick="showScreen('home-screen')">back</button>
+                <button class="menu-button" onclick="startScan()">start scan</button>
+            </div>
+        </section>
+
+        <section id="game-screen" class="screen">
+            <div class="hud">
+                <div>Difficulty: <strong id="hud-difficulty"></strong></div>
+                <div>Moves: <strong id="hud-moves">0</strong></div>
+                <div>Par: <strong id="hud-par">0</strong></div>
+                <div>Limit: <strong id="hud-limit">0</strong></div>
+            </div>
+
+            <div class="game-area">
+                <div class="board-wrap">
+                    <div id="board" class="board"></div>
+                </div>
+
+                <aside class="side-panel">
+                    <h3>How it works</h3>
+                    <p>Click a light to change it and some nearby lights.</p>
+                    <p>Your goal is to make the entire board green.</p>
+                    <p>Green is safe. Yellow is suspicious. Red is evidence.</p>
+                    <p>Press <span class="green-text">R</span> to restart or <span class="green-text">H</span> to go home.</p>
+
+                    <div class="screen-buttons">
+                        <button class="menu-button" onclick="startScan()">restart</button>
+                        <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="result-screen" class="screen">
+            <div class="result-card">
+                <div id="result-title" class="result-title">result</div>
+                <p id="result-message" class="result-message"></p>
+                <div class="screen-buttons">
+                    <button class="menu-button" onclick="startScan()">try again</button>
+                    <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let selectedDifficulty = "";
+        let board = [];
+        let rows = 3;
+        let cols = 3;
+        let colorCount = 3;
+        let moves = 0;
+        let parMoves = 10;
+        let maxMoves = 20;
+        let scrambleMoves = 8;
+        let patternType = "plus";
+
+        const colors = ["green", "yellow", "red"];
+
+        const difficultyInfo = {
+            "kids tutorial": {
+                rows: 3,
+                cols: 3,
+                colorCount: 2,
+                par: 6,
+                limit: 14,
+                scramble: 5,
+                pattern: "plus",
+                text: `
+                    <p class="green-text">2 colors: green and red.</p>
+                    <p>Clicking a light changes it and the nearby lights.</p>
+                    <p>This mode is the detector pretending to have mercy.</p>
+                    <p class="red-text">If you struggle here, the machine recommends accepting that the problem might be you.</p>
+                `
+            },
+            "normal human": {
+                rows: 3,
+                cols: 3,
+                colorCount: 3,
+                par: 9,
+                limit: 20,
+                scramble: 8,
+                pattern: "plus",
+                text: `
+                    <p class="green-text">3 colors: green, yellow, and red.</p>
+                    <p class="green-text">Green → yellow → red → green.</p>
+                    <p>This is where the detector stops being friendly.</p>
+                    <p class="red-text">Recommended for people with basic confidence. That confidence may not survive the scan.</p>
+                `
+            },
+            "skill issue": {
+                rows: 4,
+                cols: 4,
+                colorCount: 3,
+                par: 14,
+                limit: 28,
+                scramble: 12,
+                pattern: "plus",
+                text: `
+                    <p class="green-text">3 colors, bigger board, more suffering.</p>
+                    <p>This mode is not here to teach you. It is here to collect evidence.</p>
+                    <p>Every bad click will be recorded, analyzed, and used against your self-esteem.</p>
+                    <p class="red-text">Recommended if you think you are good.</p>
+                `
+            },
+            "humiliation mode": {
+                rows: 4,
+                cols: 4,
+                colorCount: 3,
+                par: 18,
+                limit: 34,
+                scramble: 16,
+                pattern: "allAround",
+                text: `
+                    <p class="green-text">3 colors. Heavy scrambling. Diagonals included.</p>
+                    <p>The detector is no longer pretending to help.</p>
+                    <p>This mode exists for public embarrassment and private character development.</p>
+                    <p class="red-text">The game is solvable. Your excuses are not.</p>
+                `
+            }
+        };
+
+        function showScreen(screenId) {
+            const screens = document.querySelectorAll(".screen");
+            for (let i = 0; i < screens.length; i++) {
+                screens[i].classList.remove("active");
+            }
+            document.getElementById(screenId).classList.add("active");
+        }
+
+        function selectDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            document.getElementById("difficulty-title").textContent = difficulty;
+            document.getElementById("explanation-text").innerHTML = difficultyInfo[difficulty].text;
+            showScreen("explanation-screen");
+        }
+
+        function startScan() {
+            const settings = difficultyInfo[selectedDifficulty];
+
+            rows = settings.rows;
+            cols = settings.cols;
+            colorCount = settings.colorCount;
+            parMoves = settings.par;
+            maxMoves = settings.limit;
+            scrambleMoves = settings.scramble;
+            patternType = settings.pattern;
+            moves = 0;
+
+            createSolvedBoard();
+            scrambleBoard();
+            drawBoard();
+            updateHud();
+            showScreen("game-screen");
+        }
+
+        function createSolvedBoard() {
+            board = [];
+
+            for (let row = 0; row < rows; row++) {
+                let currentRow = [];
+                for (let col = 0; col < cols; col++) {
+                    currentRow.push(0);
+                }
+                board.push(currentRow);
+            }
+        }
+
+        function scrambleBoard() {
+            for (let i = 0; i < scrambleMoves; i++) {
+                let randomRow = Math.floor(Math.random() * rows);
+                let randomCol = Math.floor(Math.random() * cols);
+                applyMove(randomRow, randomCol);
+            }
+
+            if (checkWin()) {
+                scrambleBoard();
+            }
+        }
+
+        function drawBoard() {
+            const boardElement = document.getElementById("board");
+            boardElement.innerHTML = "";
+            boardElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    let light = document.createElement("button");
+                    light.className = "light " + colors[board[row][col]];
+                    light.setAttribute("aria-label", "light " + row + " " + col);
+                    light.onclick = function() {
+                        handleLightClick(row, col);
+                    };
+                    boardElement.appendChild(light);
+                }
+            }
+        }
+
+        function handleLightClick(row, col) {
+            applyMove(row, col);
+            moves++;
+            drawBoard();
+            updateHud();
+
+            if (checkWin()) {
+                showResult(true);
+            } else if (moves >= maxMoves) {
+                showResult(false);
+            }
+        }
+
+        function applyMove(row, col) {
+            changeLight(row, col);
+            changeLight(row - 1, col);
+            changeLight(row + 1, col);
+            changeLight(row, col - 1);
+            changeLight(row, col + 1);
+
+            if (patternType == "allAround") {
+                changeLight(row - 1, col - 1);
+                changeLight(row - 1, col + 1);
+                changeLight(row + 1, col - 1);
+                changeLight(row + 1, col + 1);
+            }
+        }
+
+        function changeLight(row, col) {
+            if (row < 0 || row >= rows || col < 0 || col >= cols) {
+                return;
+            }
+
+            board[row][col]++;
+
+            if (board[row][col] >= colorCount) {
+                board[row][col] = 0;
+            }
+        }
+
+        function checkWin() {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (board[row][col] != 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function updateHud() {
+            document.getElementById("hud-difficulty").textContent = selectedDifficulty;
+            document.getElementById("hud-moves").textContent = moves;
+            document.getElementById("hud-par").textContent = parMoves;
+            document.getElementById("hud-limit").textContent = maxMoves;
+        }
+
+        function showResult(won) {
+            let title = document.getElementById("result-title");
+            let message = document.getElementById("result-message");
+
+            if (won && moves <= parMoves) {
+                title.textContent = "scan passed";
+                title.style.color = "lime";
+                message.textContent = "You solved it in " + moves + " moves. The detector is disappointed because it found less evidence than expected.";
+            } else if (won) {
+                title.textContent = "technically passed";
+                title.style.color = "#ffd447";
+                message.textContent = "You solved it in " + moves + " moves. The machine accepts the result, but it will remember the struggle.";
+            } else {
+                title.textContent = "skill issue detected";
+                title.style.color = "#ff3131";
+                message.textContent = "You reached the move limit without solving the puzzle. The detector has completed its report. It is not looking good.";
+            }
+
+            showScreen("result-screen");
+        }
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key.toLowerCase() == "h") {
+                showScreen("home-screen");
+            }
+
+            if (event.key.toLowerCase() == "r" && selectedDifficulty != "") {
+                startScan();
+            }
+        });
+    </script>
+</body>
+</html>
