@@ -15,6 +15,8 @@
             --muted: #9ca3af;
             --green: #00ff00;
             --yellow: #ffff00;
+            --purple: #a855f7;
+            --light-blue: #00aaff;
             --red: #ff0033;
             --blue: #1d4ed8;
         }
@@ -232,7 +234,17 @@
 
         .yellow {
             background: var(--yellow);
-            box-shadow: 0 0 18px rgba(255, 230, 0, 0.34), inset 0 0 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 22px rgba(255, 255, 0, 0.50), inset 0 0 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .blue-light {
+            background: var(--light-blue);
+            box-shadow: 0 0 22px rgba(0, 170, 255, 0.48), inset 0 0 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .purple {
+            background: var(--purple);
+            box-shadow: 0 0 22px rgba(168, 85, 247, 0.48), inset 0 0 12px rgba(0, 0, 0, 0.4);
         }
 
         .red {
@@ -419,7 +431,7 @@
                 <aside class="side-panel">
                     <h3>How it works</h3>
                     <p>Each button shows which lights it changes. Pressing a button cycles all those lights forward.</p>
-                    <p>Easy mode uses two colors. The other modes use green, yellow, and red.</p>
+                    <p>Easy mode uses two colors. Normal and skill issue use three. Humiliation mode uses five because apparently peace was never an option.</p>
 
                     <div class="screen-buttons">
                         <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
@@ -470,6 +482,7 @@
         let generatedButtons = [];
         let playerButtons = [];
         let generatedUsage = [];
+        let buttonOrder = [];
         let knownSolutionLength = 0;
         let currentMixTarget = 0;
 
@@ -511,18 +524,18 @@
                 minMix: 5,
                 maxMix: 5,
                 text: `
-                    <p class="green-text">3 colors, more scrambling, more suffering.</p>
-                    <p>This mode is not here to teach you. It is here to collect evidence. Every bad click will be recorded, analyzed, and used against your self-esteem.</p>
+                    <p class="green-text">3 colors, more scrambling, and moving buttons.</p>
+                    <p>After every click, the buttons shuffle positions. The buttons are still the same, but your memory is no longer invited.</p>
                     <p class="red-text">Recommended if you think you are good. The detector is excited to test that theory.</p>
                 `
             },
             "humiliation mode": {
-                colors: 3,
-                minMix: 5,
+                colors: 5,
+                minMix: 10,
                 maxMix: 10,
                 text: `
-                    <p class="green-text">3 colors. random heavy scrambling.</p>
-                    <p>The detector is no longer pretending to help. This mode exists for public embarrassment and private character development.</p>
+                    <p class="green-text">5 colors: green, blue, yellow, purple, and red.</p>
+                    <p>Green → blue → yellow → purple → red → green. The scramble is fixed at 10 because mercy has been removed from the settings.</p>
                     <p class="red-text">The game is solvable. Your excuses are not. Recommended by absolutely nobody.</p>
                 `
             }
@@ -548,10 +561,10 @@
                 under10: "X moves confirms that the mode name was not random. The scan found what it came for."
             },
             "humiliation mode": {
-                under5: "You solved humiliation mode in X moves. This result is too clean to trust without another scan.",
-                baseline: "You survived humiliation mode in X moves. The result is efficient enough to avoid immediate ridicule.",
-                plus3: "You completed the scan, but needing X moves means humiliation mode did its job.",
-                over3: "You eventually finished, but X moves turned the scan into a public service announcement about overconfidence."
+                under10: "You solved humiliation mode in X moves. This result is too clean to trust without another scan.",
+                exactly10: "You survived humiliation mode in exactly X moves. The result is efficient enough to avoid immediate ridicule.",
+                under16: "You completed the scan in X moves, but needing this many clicks means humiliation mode did its job.",
+                over15: "You eventually finished in X moves, but the scan has become a public service announcement about overconfidence."
             }
         };
 
@@ -599,10 +612,14 @@
             generatedButtons = [];
             playerButtons = [];
             generatedUsage = [];
+            buttonOrder = [];
             moves = 0;
 
             for (let i = 0; i < NUM_LIGHTS; i++) lights.push(0);
-            for (let i = 0; i < NUM_BUTTONS; i++) generatedUsage.push(0);
+            for (let i = 0; i < NUM_BUTTONS; i++) {
+                generatedUsage.push(0);
+                buttonOrder.push(i);
+            }
         }
 
         function scramblePuzzle() {
@@ -640,6 +657,8 @@
                 else redCount++;
             }
 
+            if (currentSettings.colors > 3) return false;
+
             return greenCount == 3 && redCount == 3 && yellowCount == 0;
         }
 
@@ -654,7 +673,13 @@
             document.getElementById("hud-difficulty").textContent = selectedDifficulty;
             document.getElementById("hud-moves").textContent = moves;
             document.getElementById("hud-colors").textContent = currentSettings.colors;
-            document.getElementById("rule-text").textContent = currentSettings.colors == 2 ? "green → red → green" : "green → yellow → red → green";
+            if (currentSettings.colors == 2) {
+                document.getElementById("rule-text").textContent = "green → red → green";
+            } else if (currentSettings.colors == 5) {
+                document.getElementById("rule-text").textContent = "green → blue → yellow → purple → red → green";
+            } else {
+                document.getElementById("rule-text").textContent = "green → yellow → red → green";
+            }
         }
 
         function drawLights() {
@@ -681,6 +706,12 @@
         function getLightClass(value) {
             if (value == 0) return "green";
             if (currentSettings.colors == 2) return "red";
+            if (currentSettings.colors == 5) {
+                if (value == 1) return "blue-light";
+                if (value == 2) return "yellow";
+                if (value == 3) return "purple";
+                return "red";
+            }
             if (value == 1) return "yellow";
             return "red";
         }
@@ -689,11 +720,12 @@
             const buttonArea = document.getElementById("puzzle-buttons");
             buttonArea.innerHTML = "";
 
-            for (let i = 0; i < NUM_BUTTONS; i++) {
+            for (let i = 0; i < buttonOrder.length; i++) {
+                let buttonIndex = buttonOrder[i];
                 let btn = document.createElement("button");
                 btn.className = "puzzle-button";
-                btn.textContent = patternLabel(i);
-                btn.onclick = function() { pressPlayerButton(i); };
+                btn.textContent = patternLabel(buttonIndex);
+                btn.onclick = function() { pressPlayerButton(buttonIndex); };
                 buttonArea.appendChild(btn);
             }
         }
@@ -702,12 +734,26 @@
             moves++;
             playerButtons.push(buttonIndex);
             applyButton(buttonIndex);
+
+            if (selectedDifficulty == "skill issue") {
+                shuffleButtonOrder();
+            }
+
             drawGame();
 
             if (checkWin()) {
                 showResult();
             } else {
                 showScannerPulse();
+            }
+        }
+
+        function shuffleButtonOrder() {
+            for (let i = buttonOrder.length - 1; i > 0; i--) {
+                let j = randomInt(0, i);
+                let temp = buttonOrder[i];
+                buttonOrder[i] = buttonOrder[j];
+                buttonOrder[j] = temp;
             }
         }
 
@@ -778,7 +824,7 @@
                 } else if (moves < 7) {
                     key = "under7";
                     title = "skill issue level: visible";
-                    color = "#ff8c00";
+                    color = "#00ff00";
                 } else {
                     key = "under10";
                     title = "skill issue level: serious";
@@ -796,7 +842,7 @@
                 } else if (moves < 6) {
                     key = "under6";
                     title = "skill issue level: present";
-                    color = "#ff8c00";
+                    color = "#00ff00";
                 } else {
                     key = "under9";
                     title = "skill issue level: moderate";
@@ -814,27 +860,27 @@
                 } else if (moves < 7) {
                     key = "under7";
                     title = "skill issue level: minor";
-                    color = "#ff8c00";
+                    color = "#00ff00";
                 } else {
                     key = "under10";
                     title = "skill issue level: severe enough";
                     color = "#ff0033";
                 }
             } else if (selectedDifficulty == "humiliation mode") {
-                if (moves < 5) {
-                    key = "under5";
+                if (moves < 10) {
+                    key = "under10";
                     title = "skill issue level: suspicious anomaly";
                     color = "#00ff00";
-                } else if (moves <= currentMixTarget) {
-                    key = "baseline";
+                } else if (moves == 10) {
+                    key = "exactly10";
                     title = "skill issue level: not embarrassing yet";
                     color = "#00ff00";
-                } else if (moves <= currentMixTarget + 3) {
-                    key = "plus3";
+                } else if (moves <= 15) {
+                    key = "under16";
                     title = "skill issue level: active";
-                    color = "#ff8c00";
+                    color = "#00ff00";
                 } else {
-                    key = "over3";
+                    key = "over15";
                     title = "skill issue level: full humiliation confirmed";
                     color = "#ff0033";
                 }
