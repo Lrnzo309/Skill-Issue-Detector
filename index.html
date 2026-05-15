@@ -5,283 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skill Issue Detector</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --panel: rgba(0, 0, 0, 0.78);
+            --panel-soft: rgba(255, 255, 255, 0.045);
+            --border: rgba(0, 255, 0, 0.42);
+            --white: #f3f4f6;
+            --muted: #9ca3af;
+            --green: #00ff00;
+            --yellow: #ffd447;
+            --red: #ff3131;
         }
-
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at top, #111827, #020617 55%, #000000);
-            color: white;
+            background: radial-gradient(circle at top, rgba(0,255,0,.10), transparent 28%), radial-gradient(circle at bottom, #020617, #000 60%);
+            color: var(--white);
             font-family: "Courier New", monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 18px;
         }
-
         .game-shell {
             width: min(920px, 100%);
-            min-height: 620px;
-            border: 2px solid rgba(0, 255, 0, 0.45);
-            border-radius: 24px;
-            background: rgba(0, 0, 0, 0.78);
-            box-shadow: 0 0 45px rgba(0, 255, 0, 0.14);
-            padding: 34px;
+            min-height: 640px;
+            border: 2px solid var(--border);
+            border-radius: 22px;
+            background: var(--panel);
+            box-shadow: 0 0 42px rgba(0,255,0,.14);
+            padding: 30px;
+            overflow: hidden;
         }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        h1 {
-            color: lime;
-            font-size: clamp(2.1rem, 6vw, 4rem);
-            line-height: 1;
-            margin-bottom: 12px;
+        .screen { display: none; min-height: 575px; }
+        .screen.active { display: block; }
+        h1, h2 {
+            color: var(--green);
             text-align: center;
+            font-weight: 700;
+            line-height: 1.05;
+            text-shadow: 0 0 12px rgba(0,255,0,.25);
         }
-
-        h2 {
-            color: lime;
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            margin-bottom: 10px;
-            text-align: center;
-            text-transform: lowercase;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #d1d5db;
-            font-size: 1.05rem;
-            margin-bottom: 28px;
-        }
-
-        .intro-text {
+        h1 { font-size: clamp(2.2rem, 6vw, 4rem); margin-bottom: 12px; }
+        h2 { font-size: clamp(2rem, 5vw, 3.3rem); margin-bottom: 8px; text-transform: lowercase; }
+        .subtitle { text-align: center; font-size: 1.05rem; color: var(--white); margin-bottom: 26px; }
+        .intro-text, .explanation-box {
             max-width: 760px;
-            margin: 0 auto 28px;
-            color: #e5e7eb;
+            margin: 0 auto;
             text-align: center;
             line-height: 1.7;
+            color: #e5e7eb;
         }
-
-        .warning {
-            color: #ff4d4d;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 18px;
-        }
-
+        .intro-text p { margin-bottom: 7px; }
+        .warning { text-align: center; color: var(--red); font-weight: 700; margin-top: 24px; }
         .button-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(180px, 1fr));
             gap: 18px;
             max-width: 560px;
-            margin: 32px auto;
+            margin: 24px auto 0;
         }
-
         button {
             border: none;
             cursor: pointer;
             font-family: "Courier New", monospace;
-            font-weight: bold;
-            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+            font-weight: 700;
+            transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
         }
-
         .menu-button {
-            background: lime;
-            color: black;
-            border-radius: 14px;
-            padding: 18px 20px;
+            background: var(--green);
+            color: #000;
+            border-radius: 12px;
+            padding: 16px 18px;
             font-size: 1rem;
+            border: 1px solid transparent;
         }
-
-        .menu-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 18px rgba(0, 255, 0, 0.55);
-        }
-
-        .secondary-button {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .secondary-button:hover {
-            border-color: lime;
-            color: lime;
-            box-shadow: none;
-        }
-
-        .credit {
-            text-align: center;
-            color: #9ca3af;
-            margin-top: 34px;
-            font-size: 0.9rem;
-        }
-
+        .menu-button:hover { transform: translateY(-3px); box-shadow: 0 0 20px rgba(0,255,0,.48); }
+        .secondary-button { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,.24); }
+        .secondary-button:hover { color: var(--green); border-color: var(--green); box-shadow: none; }
+        .credit { text-align: center; color: var(--muted); margin-top: 34px; font-size: .9rem; }
         .explanation-box {
-            max-width: 700px;
-            margin: 30px auto;
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-radius: 20px;
-            padding: 26px;
-            background: rgba(255, 255, 255, 0.04);
-            text-align: center;
-            line-height: 1.7;
-        }
-
-        .green-text {
-            color: lime;
-            font-weight: bold;
-        }
-
-        .red-text {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
-
-        .screen-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-            flex-wrap: wrap;
-            margin-top: 28px;
-        }
-
-        .screen-buttons button {
-            min-width: 150px;
-        }
-
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            gap: 14px;
-            flex-wrap: wrap;
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            max-width: 720px;
+            margin-top: 30px;
+            padding: 26px 28px;
             border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 28px;
-            color: #e5e7eb;
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--panel-soft);
+            border: 1px solid rgba(255,255,255,.12);
         }
-
-        .hud strong {
-            color: lime;
+        .explanation-box p { margin-bottom: 10px; }
+        .green-text { color: var(--green); font-weight: 700; }
+        .red-text { color: var(--red); font-weight: 700; }
+        .screen-buttons { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 28px; }
+        .screen-buttons button { min-width: 150px; }
+        .hud { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)); gap: 12px; margin-bottom: 22px; }
+        .hud-box {
+            border: 1px solid rgba(255,255,255,.13);
+            background: var(--panel-soft);
+            border-radius: 14px;
+            padding: 12px;
+            color: var(--muted);
+            text-align: center;
         }
-
-        .game-area {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 28px;
-            align-items: start;
-        }
-
-        .board-wrap {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 350px;
-        }
-
-        .board {
-            display: grid;
-            gap: 10px;
-            padding: 18px;
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .light {
-            width: 62px;
-            height: 62px;
-            border-radius: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.18);
-            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);
-        }
-
-        .light:hover {
-            transform: scale(1.07);
-            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
-        }
-
-        .green {
-            background: lime;
-        }
-
-        .yellow {
-            background: #ffd447;
-        }
-
-        .red {
-            background: #ff3131;
-        }
-
-        .side-panel {
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        .hud-box strong { display: block; color: var(--green); margin-top: 4px; font-size: 1.05rem; }
+        .game-layout { display: grid; grid-template-columns: 1fr 310px; gap: 24px; align-items: start; }
+        .play-panel, .side-panel {
+            background: var(--panel-soft);
+            border: 1px solid rgba(255,255,255,.12);
             border-radius: 20px;
             padding: 22px;
-            background: rgba(255, 255, 255, 0.04);
-            line-height: 1.6;
         }
-
-        .side-panel h3 {
-            color: lime;
-            margin-bottom: 10px;
+        .goal-text { text-align: center; color: var(--white); margin-bottom: 10px; }
+        .rule-text { text-align: center; color: var(--muted); margin-bottom: 20px; font-size: .92rem; }
+        .lights-row { display: flex; justify-content: center; gap: 12px; margin: 20px 0 10px; flex-wrap: wrap; }
+        .light-wrap { text-align: center; }
+        .light {
+            width: 54px; height: 54px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,.18);
+            box-shadow: inset 0 0 12px rgba(0,0,0,.55);
         }
-
-        .side-panel p {
-            color: #d1d5db;
-            margin-bottom: 14px;
-            font-size: 0.95rem;
+        .light-number { color: var(--muted); font-size: .75rem; margin-top: 7px; }
+        .green { background: var(--green); box-shadow: 0 0 18px rgba(0,255,0,.25), inset 0 0 12px rgba(0,0,0,.4); }
+        .yellow { background: var(--yellow); box-shadow: 0 0 18px rgba(255,212,71,.22), inset 0 0 12px rgba(0,0,0,.4); }
+        .red { background: var(--red); box-shadow: 0 0 18px rgba(255,49,49,.22), inset 0 0 12px rgba(0,0,0,.4); }
+        .scanner-wrap {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            margin: 18px 0 22px; color: var(--muted); font-size: .88rem;
         }
-
+        .spinner {
+            width: 38px; height: 38px;
+            border: 4px solid rgba(255,255,255,.13);
+            border-top-color: var(--green);
+            border-right-color: rgba(0,255,0,.5);
+            border-radius: 50%;
+            animation: spin .85s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .puzzle-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 8px; }
+        .puzzle-button {
+            min-height: 48px;
+            border-radius: 10px;
+            background: #1d4ed8;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.14);
+            font-size: .95rem;
+        }
+        .puzzle-button:hover { transform: translateY(-2px); box-shadow: 0 0 16px rgba(29,78,216,.55); }
+        .side-panel h3 { color: var(--green); margin-bottom: 12px; font-size: 1.05rem; }
+        .side-panel p { color: #d1d5db; font-size: .93rem; line-height: 1.55; margin-bottom: 12px; }
+        .mini-debug { font-size: .8rem; color: var(--muted); line-height: 1.45; margin-top: 18px; word-break: break-word; }
         .result-card {
-            max-width: 700px;
-            margin: 35px auto 0;
-            padding: 32px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
+            max-width: 760px;
+            margin: 26px auto 0;
+            padding: 30px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,.14);
+            background: var(--panel-soft);
             text-align: center;
         }
-
-        .result-title {
-            font-size: clamp(2rem, 6vw, 4rem);
-            color: lime;
-            margin-bottom: 16px;
-        }
-
-        .result-message {
-            color: #e5e7eb;
+        .result-title { font-size: clamp(2rem, 6vw, 3.8rem); color: var(--green); margin-bottom: 14px; text-transform: lowercase; }
+        .result-message { color: #e5e7eb; line-height: 1.65; margin-bottom: 18px; }
+        .result-data {
+            border-top: 1px solid rgba(255,255,255,.12);
+            margin-top: 20px;
+            padding-top: 18px;
+            color: var(--muted);
             line-height: 1.7;
-            margin-bottom: 20px;
+            font-size: .9rem;
+            word-break: break-word;
         }
-
-        @media (max-width: 760px) {
-            .game-shell {
-                padding: 22px;
-            }
-
-            .button-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .game-area {
-                grid-template-columns: 1fr;
-            }
-
-            .light {
-                width: 52px;
-                height: 52px;
-            }
+        .loss-title { color: var(--red); }
+        @media (max-width: 800px) {
+            .game-shell { padding: 22px; min-height: auto; }
+            .hud { grid-template-columns: repeat(2, 1fr); }
+            .game-layout { grid-template-columns: 1fr; }
+            .button-grid { grid-template-columns: 1fr; }
+            .puzzle-buttons { grid-template-columns: repeat(2, 1fr); }
+            .light { width: 48px; height: 48px; }
         }
     </style>
 </head>
@@ -290,69 +189,78 @@
         <section id="home-screen" class="screen active">
             <h1>Skill Issue Detector</h1>
             <p class="subtitle">Welcome to the skill issue detector</p>
-
             <div class="intro-text">
                 <p>Your job is simple: make every light green before the machine realizes that your skill issue is huge.</p>
                 <p>If that sounds easy, confidence is your first mistake. The puzzle is fair. Your brain might not be.</p>
-                <p>Every extra move makes your skill issue harder to ignore. The detector has no mercy, only data.</p>
+                <p>Every extra move makes your skill issue harder to ignore. If you suck, blaming the game will not help.</p>
+                <p>The detector has no mercy, only data. The game is solvable. Your excuses are not. Good luck, you are going to need it.</p>
             </div>
-
             <p class="warning">Select a difficulty and prepare to be exposed.</p>
-
             <div class="button-grid">
                 <button class="menu-button" onclick="selectDifficulty('kids tutorial')">kids tutorial</button>
                 <button class="menu-button" onclick="selectDifficulty('normal human')">normal human</button>
                 <button class="menu-button" onclick="selectDifficulty('skill issue')">skill issue</button>
                 <button class="menu-button" onclick="selectDifficulty('humiliation mode')">humiliation mode</button>
             </div>
-
             <p class="credit">Game designed and coded by Lrnzo309</p>
         </section>
-
         <section id="explanation-screen" class="screen">
             <h2 id="difficulty-title">difficulty</h2>
             <p class="subtitle">difficulty scan selected</p>
-
             <div id="explanation-text" class="explanation-box"></div>
-
             <div class="screen-buttons">
                 <button class="menu-button secondary-button" onclick="showScreen('home-screen')">back</button>
                 <button class="menu-button" onclick="startScan()">start scan</button>
             </div>
         </section>
-
         <section id="game-screen" class="screen">
             <div class="hud">
-                <div>Difficulty: <strong id="hud-difficulty"></strong></div>
-                <div>Moves: <strong id="hud-moves">0</strong></div>
-                <div>Par: <strong id="hud-par">0</strong></div>
-                <div>Limit: <strong id="hud-limit">0</strong></div>
+                <div class="hud-box">difficulty<strong id="hud-difficulty"></strong></div>
+                <div class="hud-box">moves<strong id="hud-moves">0</strong></div>
+                <div class="hud-box">colors<strong id="hud-colors">0</strong></div>
+                <div class="hud-box">scramble<strong id="hud-scramble">0</strong></div>
             </div>
-
-            <div class="game-area">
-                <div class="board-wrap">
-                    <div id="board" class="board"></div>
-                </div>
-
+            <div class="game-layout">
+                <section class="play-panel">
+                    <p class="goal-text">make every light green.</p>
+                    <p id="rule-text" class="rule-text">green → yellow → red → green</p>
+                    <div id="lights-row" class="lights-row"></div>
+                    <div class="scanner-wrap">
+                        <div class="spinner"></div>
+                        <span>detecting skill issue...</span>
+                    </div>
+                    <div id="puzzle-buttons" class="puzzle-buttons"></div>
+                </section>
                 <aside class="side-panel">
                     <h3>How it works</h3>
-                    <p>Click a light to change it and some nearby lights.</p>
-                    <p>Your goal is to make the entire board green.</p>
-                    <p>Green is safe. Yellow is suspicious. Red is evidence.</p>
-                    <p>Press <span class="green-text">R</span> to restart or <span class="green-text">H</span> to go home.</p>
-
+                    <p>Each button shows which lights it changes. Pressing a button cycles all those lights forward.</p>
+                    <p>Easy mode uses two colors. The other modes use green, yellow, and red.</p>
+                    <p>There is no move limit. Solving it in 12 moves is not the same as solving it in 80. The detector will judge you.</p>
+                    <p>Press <span class="green-text">R</span> to restart, <span class="green-text">H</span> for home, or <span class="green-text">Q</span> to give up.</p>
                     <div class="screen-buttons">
                         <button class="menu-button" onclick="startScan()">restart</button>
-                        <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
+                        <button class="menu-button secondary-button" onclick="giveUp()">give up</button>
                     </div>
+                    <div id="live-debug" class="mini-debug"></div>
                 </aside>
             </div>
         </section>
-
         <section id="result-screen" class="screen">
             <div class="result-card">
                 <div id="result-title" class="result-title">result</div>
                 <p id="result-message" class="result-message"></p>
+                <div id="result-data" class="result-data"></div>
+                <div class="screen-buttons">
+                    <button class="menu-button" onclick="startScan()">try again</button>
+                    <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
+                </div>
+            </div>
+        </section>
+        <section id="lose-screen" class="screen">
+            <div class="result-card">
+                <div class="result-title loss-title">scan failed</div>
+                <p class="result-message">You gave up before making every light green. The detector has marked this as a voluntary confession.</p>
+                <div id="loss-data" class="result-data"></div>
                 <div class="screen-buttons">
                     <button class="menu-button" onclick="startScan()">try again</button>
                     <button class="menu-button secondary-button" onclick="showScreen('home-screen')">home</button>
@@ -360,247 +268,230 @@
             </div>
         </section>
     </main>
-
     <script>
         let selectedDifficulty = "";
-        let board = [];
-        let rows = 3;
-        let cols = 3;
-        let colorCount = 3;
+        let currentSettings = null;
+        const NUM_LIGHTS = 6;
+        const NUM_BUTTONS = 8;
+        let lights = [];
         let moves = 0;
-        let parMoves = 10;
-        let maxMoves = 20;
-        let scrambleMoves = 8;
-        let patternType = "plus";
-
-        const colors = ["green", "yellow", "red"];
-
+        let generatedButtons = [];
+        let playerButtons = [];
+        let generatedUsage = [];
+        let knownSolutionLength = 0;
+        let currentMixTarget = 0;
+        const colorNames = ["green", "yellow", "red"];
+        const patterns = [
+            [0, 1, 3], [1, 2, 4], [0, 3, 5], [2, 3, 5],
+            [0, 2, 4], [1, 4, 5], [0, 4, 5], [1, 2, 3]
+        ];
         const difficultyInfo = {
             "kids tutorial": {
-                rows: 3,
-                cols: 3,
-                colorCount: 2,
-                par: 6,
-                limit: 14,
-                scramble: 5,
-                pattern: "plus",
-                text: `
-                    <p class="green-text">2 colors: green and red.</p>
-                    <p>Clicking a light changes it and the nearby lights.</p>
-                    <p>This mode is the detector pretending to have mercy.</p>
-                    <p class="red-text">If you struggle here, the machine recommends accepting that the problem might be you.</p>
-                `
+                colors: 2, minMix: 4, maxMix: 4,
+                text: `<p class="green-text">2 colors: green and red.</p><p>This mode is the detector pretending to have mercy. The rules are simple, the puzzle is calm, and your excuses are still barely acceptable.</p><p class="red-text">If you struggle here, the machine recommends accepting that the problem might be you.</p>`
             },
             "normal human": {
-                rows: 3,
-                cols: 3,
-                colorCount: 3,
-                par: 9,
-                limit: 20,
-                scramble: 8,
-                pattern: "plus",
-                text: `
-                    <p class="green-text">3 colors: green, yellow, and red.</p>
-                    <p class="green-text">Green → yellow → red → green.</p>
-                    <p>This is where the detector stops being friendly.</p>
-                    <p class="red-text">Recommended for people with basic confidence. That confidence may not survive the scan.</p>
-                `
+                colors: 3, minMix: 3, maxMix: 3,
+                text: `<p class="green-text">3 colors: green, yellow, and red.</p><p class="green-text">Green → yellow → red → green.</p><p>This is where the detector stops being friendly. The puzzle is still fair, but random clicking will start looking embarrassing very quickly.</p><p class="red-text">Recommended for people with basic confidence. That confidence may not survive the scan.</p>`
             },
             "skill issue": {
-                rows: 4,
-                cols: 4,
-                colorCount: 3,
-                par: 14,
-                limit: 28,
-                scramble: 12,
-                pattern: "plus",
-                text: `
-                    <p class="green-text">3 colors, bigger board, more suffering.</p>
-                    <p>This mode is not here to teach you. It is here to collect evidence.</p>
-                    <p>Every bad click will be recorded, analyzed, and used against your self-esteem.</p>
-                    <p class="red-text">Recommended if you think you are good.</p>
-                `
+                colors: 3, minMix: 5, maxMix: 5,
+                text: `<p class="green-text">3 colors, more scrambling, more suffering.</p><p>This mode is not here to teach you. It is here to collect evidence. Every bad click will be recorded, analyzed, and used against your self-esteem.</p><p class="red-text">Recommended if you think you are good. The detector is excited to test that theory.</p>`
             },
             "humiliation mode": {
-                rows: 4,
-                cols: 4,
-                colorCount: 3,
-                par: 18,
-                limit: 34,
-                scramble: 16,
-                pattern: "allAround",
-                text: `
-                    <p class="green-text">3 colors. Heavy scrambling. Diagonals included.</p>
-                    <p>The detector is no longer pretending to help.</p>
-                    <p>This mode exists for public embarrassment and private character development.</p>
-                    <p class="red-text">The game is solvable. Your excuses are not.</p>
-                `
+                colors: 3, minMix: 5, maxMix: 10,
+                text: `<p class="green-text">3 colors. random heavy scrambling.</p><p>The detector is no longer pretending to help. This mode exists for public embarrassment and private character development.</p><p class="red-text">The game is solvable. Your excuses are not. Recommended by absolutely nobody.</p>`
             }
         };
-
         function showScreen(screenId) {
             const screens = document.querySelectorAll(".screen");
-            for (let i = 0; i < screens.length; i++) {
-                screens[i].classList.remove("active");
-            }
+            for (let i = 0; i < screens.length; i++) screens[i].classList.remove("active");
             document.getElementById(screenId).classList.add("active");
         }
-
         function selectDifficulty(difficulty) {
             selectedDifficulty = difficulty;
+            currentSettings = difficultyInfo[difficulty];
             document.getElementById("difficulty-title").textContent = difficulty;
-            document.getElementById("explanation-text").innerHTML = difficultyInfo[difficulty].text;
+            document.getElementById("explanation-text").innerHTML = currentSettings.text;
             showScreen("explanation-screen");
         }
-
         function startScan() {
-            const settings = difficultyInfo[selectedDifficulty];
-
-            rows = settings.rows;
-            cols = settings.cols;
-            colorCount = settings.colorCount;
-            parMoves = settings.par;
-            maxMoves = settings.limit;
-            scrambleMoves = settings.scramble;
-            patternType = settings.pattern;
-            moves = 0;
-
-            createSolvedBoard();
-            scrambleBoard();
-            drawBoard();
-            updateHud();
+            if (!currentSettings) { selectDifficulty("normal human"); return; }
+            createPuzzle();
+            drawGame();
             showScreen("game-screen");
         }
-
-        function createSolvedBoard() {
-            board = [];
-
-            for (let row = 0; row < rows; row++) {
-                let currentRow = [];
-                for (let col = 0; col < cols; col++) {
-                    currentRow.push(0);
+        function createPuzzle() {
+            let attempts = 0;
+            do {
+                attempts++;
+                resetPuzzleState();
+                scramblePuzzle();
+            } while (shouldRejectPuzzle() && attempts < 80);
+            knownSolutionLength = getKnownSolutionLength();
+        }
+        function resetPuzzleState() {
+            lights = [];
+            generatedButtons = [];
+            playerButtons = [];
+            generatedUsage = [];
+            moves = 0;
+            for (let i = 0; i < NUM_LIGHTS; i++) lights.push(0);
+            for (let i = 0; i < NUM_BUTTONS; i++) generatedUsage.push(0);
+        }
+        function scramblePuzzle() {
+            currentMixTarget = randomInt(currentSettings.minMix, currentSettings.maxMix);
+            let maxUsesPerButton = currentSettings.colors - 1;
+            let totalUses = 0;
+            while (totalUses < currentMixTarget) {
+                let available = [];
+                for (let i = 0; i < NUM_BUTTONS; i++) {
+                    if (generatedUsage[i] < maxUsesPerButton) available.push(i);
                 }
-                board.push(currentRow);
+                if (available.length == 0) return;
+                let buttonIndex = available[randomInt(0, available.length - 1)];
+                generatedUsage[buttonIndex]++;
+                generatedButtons.push(buttonIndex);
+                applyButton(buttonIndex);
+                totalUses++;
             }
         }
-
-        function scrambleBoard() {
-            for (let i = 0; i < scrambleMoves; i++) {
-                let randomRow = Math.floor(Math.random() * rows);
-                let randomCol = Math.floor(Math.random() * cols);
-                applyMove(randomRow, randomCol);
+        function shouldRejectPuzzle() {
+            if (checkWin()) return true;
+            let redCount = 0, greenCount = 0, yellowCount = 0;
+            for (let i = 0; i < lights.length; i++) {
+                if (lights[i] == 0) greenCount++;
+                else if (lights[i] == 1 && currentSettings.colors == 3) yellowCount++;
+                else redCount++;
             }
-
-            if (checkWin()) {
-                scrambleBoard();
-            }
+            return greenCount == 3 && redCount == 3 && yellowCount == 0;
         }
-
-        function drawBoard() {
-            const boardElement = document.getElementById("board");
-            boardElement.innerHTML = "";
-            boardElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    let light = document.createElement("button");
-                    light.className = "light " + colors[board[row][col]];
-                    light.setAttribute("aria-label", "light " + row + " " + col);
-                    light.onclick = function() {
-                        handleLightClick(row, col);
-                    };
-                    boardElement.appendChild(light);
-                }
-            }
-        }
-
-        function handleLightClick(row, col) {
-            applyMove(row, col);
-            moves++;
-            drawBoard();
+        function drawGame() {
             updateHud();
-
-            if (checkWin()) {
-                showResult(true);
-            } else if (moves >= maxMoves) {
-                showResult(false);
-            }
+            drawLights();
+            drawPuzzleButtons();
+            updateLiveDebug();
         }
-
-        function applyMove(row, col) {
-            changeLight(row, col);
-            changeLight(row - 1, col);
-            changeLight(row + 1, col);
-            changeLight(row, col - 1);
-            changeLight(row, col + 1);
-
-            if (patternType == "allAround") {
-                changeLight(row - 1, col - 1);
-                changeLight(row - 1, col + 1);
-                changeLight(row + 1, col - 1);
-                changeLight(row + 1, col + 1);
-            }
-        }
-
-        function changeLight(row, col) {
-            if (row < 0 || row >= rows || col < 0 || col >= cols) {
-                return;
-            }
-
-            board[row][col]++;
-
-            if (board[row][col] >= colorCount) {
-                board[row][col] = 0;
-            }
-        }
-
-        function checkWin() {
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    if (board[row][col] != 0) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         function updateHud() {
             document.getElementById("hud-difficulty").textContent = selectedDifficulty;
             document.getElementById("hud-moves").textContent = moves;
-            document.getElementById("hud-par").textContent = parMoves;
-            document.getElementById("hud-limit").textContent = maxMoves;
+            document.getElementById("hud-colors").textContent = currentSettings.colors;
+            document.getElementById("hud-scramble").textContent = currentMixTarget;
+            document.getElementById("rule-text").textContent = currentSettings.colors == 2 ? "green → red → green" : "green → yellow → red → green";
         }
-
-        function showResult(won) {
-            let title = document.getElementById("result-title");
-            let message = document.getElementById("result-message");
-
-            if (won && moves <= parMoves) {
-                title.textContent = "scan passed";
-                title.style.color = "lime";
-                message.textContent = "You solved it in " + moves + " moves. The detector is disappointed because it found less evidence than expected.";
-            } else if (won) {
-                title.textContent = "technically passed";
-                title.style.color = "#ffd447";
-                message.textContent = "You solved it in " + moves + " moves. The machine accepts the result, but it will remember the struggle.";
-            } else {
-                title.textContent = "skill issue detected";
-                title.style.color = "#ff3131";
-                message.textContent = "You reached the move limit without solving the puzzle. The detector has completed its report. It is not looking good.";
+        function drawLights() {
+            const lightRow = document.getElementById("lights-row");
+            lightRow.innerHTML = "";
+            for (let i = 0; i < NUM_LIGHTS; i++) {
+                let wrap = document.createElement("div");
+                wrap.className = "light-wrap";
+                let light = document.createElement("div");
+                light.className = "light " + colorNames[lights[i]];
+                let num = document.createElement("div");
+                num.className = "light-number";
+                num.textContent = i + 1;
+                wrap.appendChild(light);
+                wrap.appendChild(num);
+                lightRow.appendChild(wrap);
             }
-
+        }
+        function drawPuzzleButtons() {
+            const buttonArea = document.getElementById("puzzle-buttons");
+            buttonArea.innerHTML = "";
+            for (let i = 0; i < NUM_BUTTONS; i++) {
+                let btn = document.createElement("button");
+                btn.className = "puzzle-button";
+                btn.textContent = patternLabel(i);
+                btn.onclick = function() { pressPlayerButton(i); };
+                buttonArea.appendChild(btn);
+            }
+        }
+        function pressPlayerButton(buttonIndex) {
+            moves++;
+            playerButtons.push(buttonIndex);
+            applyButton(buttonIndex);
+            drawGame();
+            if (checkWin()) showResult();
+        }
+        function applyButton(buttonIndex) {
+            let pattern = patterns[buttonIndex];
+            for (let i = 0; i < pattern.length; i++) {
+                let lightIndex = pattern[i];
+                lights[lightIndex] = (lights[lightIndex] + 1) % currentSettings.colors;
+            }
+        }
+        function checkWin() {
+            for (let i = 0; i < lights.length; i++) if (lights[i] != 0) return false;
+            return true;
+        }
+        function showResult() {
+            const title = document.getElementById("result-title");
+            const message = document.getElementById("result-message");
+            const data = document.getElementById("result-data");
+            let diagnosis = getDiagnosis();
+            title.textContent = diagnosis.title;
+            title.style.color = diagnosis.color;
+            message.textContent = diagnosis.message;
+            data.innerHTML =
+                "<p>Moves used: <span class='green-text'>" + moves + "</span></p>" +
+                "<p>Detector baseline: " + knownSolutionLength + " moves</p>" +
+                "<p>Generated mix: " + sequenceText(generatedButtons) + "</p>" +
+                "<p>Your buttons: " + sequenceText(playerButtons) + "</p>" +
+                "<p>Known fix: " + sequenceText(getKnownSolution()) + "</p>";
             showScreen("result-screen");
         }
-
+        function getDiagnosis() {
+            if (moves <= knownSolutionLength) return { title: "no skill issue detected", color: "lime", message: "You solved it in " + moves + " moves. The detector found less evidence than expected. Suspiciously competent." };
+            if (moves <= knownSolutionLength + 3) return { title: "minor skill issue", color: "#ffd447", message: "You solved it in " + moves + " moves. The machine allows it, but the extra clicks have been documented." };
+            if (moves <= knownSolutionLength + 8) return { title: "skill issue detected", color: "#ff3131", message: "You solved it in " + moves + " moves. The puzzle is open, but the diagnosis is getting ugly." };
+            return { title: "massive skill issue", color: "#ff3131", message: "You solved it in " + moves + " moves. The detector recommends lowering the difficulty before the next scan." };
+        }
+        function giveUp() {
+            const data = document.getElementById("loss-data");
+            data.innerHTML =
+                "<p>Moves used before giving up: <span class='red-text'>" + moves + "</span></p>" +
+                "<p>Generated mix: " + sequenceText(generatedButtons) + "</p>" +
+                "<p>Your buttons: " + sequenceText(playerButtons) + "</p>" +
+                "<p>Known fix: " + sequenceText(getKnownSolution()) + "</p>";
+            showScreen("lose-screen");
+        }
+        function getKnownSolutionLength() { return getKnownSolution().length; }
+        function getKnownSolution() {
+            let solution = [];
+            for (let i = 0; i < generatedUsage.length; i++) {
+                let used = generatedUsage[i] % currentSettings.colors;
+                let needed = (currentSettings.colors - used) % currentSettings.colors;
+                for (let j = 0; j < needed; j++) solution.push(i);
+            }
+            return solution;
+        }
+        function patternLabel(buttonIndex) {
+            let label = "";
+            for (let i = 0; i < patterns[buttonIndex].length; i++) {
+                label += patterns[buttonIndex][i] + 1;
+                if (i < patterns[buttonIndex].length - 1) label += " ";
+            }
+            return label;
+        }
+        function sequenceText(sequence) {
+            if (sequence.length == 0) return "none";
+            let text = "";
+            for (let i = 0; i < sequence.length; i++) {
+                let buttonIndex = sequence[i];
+                text += "#" + (buttonIndex + 1) + "(" + patternLabel(buttonIndex) + ")";
+                if (i < sequence.length - 1) text += ", ";
+            }
+            return text;
+        }
+        function updateLiveDebug() {
+            document.getElementById("live-debug").innerHTML = "<p>Generated: " + sequenceText(generatedButtons) + "</p><p>You pressed: " + sequenceText(playerButtons) + "</p>";
+        }
+        function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
         document.addEventListener("keydown", function(event) {
-            if (event.key.toLowerCase() == "h") {
-                showScreen("home-screen");
-            }
-
-            if (event.key.toLowerCase() == "r" && selectedDifficulty != "") {
-                startScan();
-            }
+            let key = event.key.toLowerCase();
+            if (key == "h") showScreen("home-screen");
+            if (key == "r" && currentSettings) startScan();
+            if (key == "q" && document.getElementById("game-screen").classList.contains("active")) giveUp();
         });
     </script>
 </body>
